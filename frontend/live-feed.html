@@ -1,0 +1,566 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PipeGuard AI Live Feed - Real-time camera monitoring with AI corrosion and leakage detection.">
+    <title>Live Feed | PipeGuard AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand"><div class="brand-icon"><span class="material-icons-outlined">shield</span></div><div class="brand-text"><h2>PipeGuard</h2><span class="brand-tag">AI CONTROL CENTER</span></div></div>
+        <div class="sidebar-status"><span class="status-dot"></span><span>System Active</span></div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="index.html"><span class="material-icons-outlined">dashboard</span><span>Dashboard</span></a></li>
+            <li class="nav-item active"><a href="live-feed.html"><span class="material-icons-outlined">videocam</span><span>Live Feed</span></a></li>
+            <li class="nav-item"><a href="pipeline-monitor.html"><span class="material-icons-outlined">route</span><span>Pipeline Monitor</span></a></li>
+            <li class="nav-item"><a href="anomaly-detection.html"><span class="material-icons-outlined">warning</span><span>Anomaly Detection</span></a></li>
+            <li class="nav-item"><a href="analytics.html"><span class="material-icons-outlined">analytics</span><span>Analytics</span></a></li>
+            <li class="nav-item"><a href="settings.html"><span class="material-icons-outlined">settings</span><span>Settings</span></a></li>
+        </ul>
+        <div class="sidebar-footer"><div class="user-card"><div class="user-avatar">AR</div><div class="user-info"><span class="user-name">Admin</span><span class="user-role">Chief Engineer</span></div></div></div>
+    </nav>
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="top-bar-left"><button class="menu-toggle" id="menuToggle"><span class="material-icons-outlined">menu</span></button><h1 class="page-title">Live Feed</h1><span class="page-subtitle">Real-Time Camera Detection</span></div>
+            <div class="top-bar-right"><div class="live-clock" id="liveClock"></div></div>
+        </header>
+        <section class="feed-grid">
+            <div class="glass-card">
+                <div class="card-header"><h3><span class="material-icons-outlined">videocam</span> Camera Feed</h3><span class="live-badge" id="liveBadge" style="opacity:0.4">● OFFLINE</span></div>
+                <div class="video-container" id="videoContainer">
+                    <video id="cameraFeed" autoplay playsinline muted></video>
+                    <canvas id="captureCanvas" style="display:none;"></canvas>
+                    <canvas id="overlayCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;"></canvas>
+                    <div class="video-overlay"><span style="font-size:11px;color:var(--outline)" id="cameraLabel">CAM-01 | AWAITING</span></div>
+                    <div class="video-overlay-bottom">
+                        <span style="font-size:11px;color:var(--on-surface);" id="feedTimestamp"></span>
+                        <span style="font-size:11px;color:var(--secondary);" id="feedFPS">-- FPS</span>
+                    </div>
+                </div>
+                <div class="controls-row" style="margin-top:16px;">
+                    <button class="btn-primary" id="startCamBtn"><span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">play_arrow</span> Start Camera</button>
+                    <button class="btn-ghost" id="stopCamBtn"><span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">stop</span> Stop</button>
+                    <button class="btn-ghost" id="screenshotBtn"><span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">photo_camera</span> Snapshot</button>
+                </div>
+            </div>
+            <div class="detection-panel">
+                <div class="glass-card detection-result normal" id="detectionResult">
+                    <span class="detection-label">CURRENT STATUS</span>
+                    <span class="detection-status" id="detectionStatus">AWAITING</span>
+                    <div class="confidence-bar-container">
+                        <span style="font-size:10px;color:var(--outline);">Confidence</span>
+                        <div class="confidence-bar"><div class="confidence-fill high" id="confidenceFill" style="width:0%"></div></div>
+                        <span style="font-size:18px;font-weight:700;font-family:var(--font-head);display:block;margin-top:6px;" id="confidenceValue">--</span>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-header"><h3>Detection Controls</h3></div>
+                    <div class="setting-row"><div><span class="setting-label">Confidence Threshold</span><span class="setting-desc" style="display:block">Min confidence for alert</span></div>
+                        <input type="range" min="0" max="100" value="60" id="confidenceSlider" style="accent-color:var(--primary);width:120px;">
+                    </div>
+                    <div style="text-align:right;margin-top:4px;"><span style="font-size:12px;font-family:var(--font-head);color:var(--primary);" id="thresholdVal">0.60</span></div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-header"><h3>Live Metrics</h3></div>
+                    <div style="display:grid;gap:10px;">
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:12px;color:var(--outline);">Prediction</span><span style="font-size:13px;font-weight:600;" id="metricPrediction">--</span></div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:12px;color:var(--outline);">Confidence</span><span style="font-size:13px;font-weight:600;" id="metricConfidence">--</span></div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:12px;color:var(--outline);">Inference</span><span style="font-size:13px;font-weight:600;color:var(--primary);" id="metricInference">-- ms</span></div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:12px;color:var(--outline);">Backend</span><span style="font-size:13px;font-weight:600;" id="metricBackend" style="color:var(--outline);">CHECKING...</span></div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;">
+                            <span style="font-size:12px;color:var(--outline);">Camera</span><span style="font-size:13px;font-weight:600;color:var(--error);" id="metricCamera">OFFLINE</span></div>
+                    </div>
+                </div>
+                <div class="glass-card" id="detectionLog">
+                    <div class="card-header"><h3>Detection Log</h3><button class="btn-ghost" style="padding:4px 10px;font-size:10px;" id="clearLogBtn">Clear</button></div>
+                    <div class="activity-timeline" id="logTimeline">
+                        <div class="timeline-item"><div class="timeline-dot info"></div><div class="timeline-content"><h4>System Ready</h4><p>Awaiting camera input & backend connection</p></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="pipeguard-state.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // ── DOM References ─────────────────────────────────────────
+        const startBtn = document.getElementById('startCamBtn');
+        const stopBtn = document.getElementById('stopCamBtn');
+        const screenshotBtn = document.getElementById('screenshotBtn');
+        const video = document.getElementById('cameraFeed');
+        const captureCanvas = document.getElementById('captureCanvas');
+        const slider = document.getElementById('confidenceSlider');
+        const thresholdVal = document.getElementById('thresholdVal');
+        const clearLogBtn = document.getElementById('clearLogBtn');
+        let stream = null;
+        let inferenceLoop = null;
+        let frameCount = 0;
+        let lastFpsTime = Date.now();
+
+        slider.addEventListener('input', () => { thresholdVal.textContent = (slider.value / 100).toFixed(2); });
+
+        // ── Check backend on load ──────────────────────────────────
+        (async () => {
+            const health = await PipeGuard.checkBackend();
+            const el = document.getElementById('metricBackend');
+            if (health) {
+                el.textContent = 'ONLINE';
+                el.style.color = 'var(--secondary)';
+            } else {
+                el.textContent = 'OFFLINE';
+                el.style.color = 'var(--error)';
+            }
+        })();
+
+        // ── Start Camera ───────────────────────────────────────────
+        startBtn.addEventListener('click', async () => {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+                video.srcObject = stream;
+                document.getElementById('metricCamera').textContent = 'ONLINE';
+                document.getElementById('metricCamera').style.color = 'var(--secondary)';
+                document.getElementById('liveBadge').style.opacity = '1';
+                document.getElementById('liveBadge').innerHTML = '● LIVE';
+                document.getElementById('cameraLabel').textContent = 'CAM-01 | ACTIVE';
+
+                // Wait for video to be ready
+                video.onloadedmetadata = () => {
+                    captureCanvas.width = 224;
+                    captureCanvas.height = 224;
+                    startInferenceLoop();
+                };
+            } catch (e) {
+                alert('Camera access denied or unavailable: ' + e.message);
+            }
+        });
+
+        // ── Stop Camera ────────────────────────────────────────────
+        stopBtn.addEventListener('click', () => {
+            stopInference();
+            if (stream) { stream.getTracks().forEach(t => t.stop()); video.srcObject = null; stream = null; }
+            document.getElementById('metricCamera').textContent = 'OFFLINE';
+            document.getElementById('metricCamera').style.color = 'var(--error)';
+            document.getElementById('liveBadge').style.opacity = '0.4';
+            document.getElementById('liveBadge').innerHTML = '● OFFLINE';
+            document.getElementById('cameraLabel').textContent = 'CAM-01 | STOPPED';
+        });
+
+        // ── Screenshot ─────────────────────────────────────────────
+        screenshotBtn.addEventListener('click', () => {
+            if (!stream) return;
+            const c = document.createElement('canvas');
+            c.width = video.videoWidth; c.height = video.videoHeight;
+            c.getContext('2d').drawImage(video, 0, 0);
+            const link = document.createElement('a');
+            link.download = `pipeguard_snapshot_${Date.now()}.png`;
+            link.href = c.toDataURL('image/png');
+            link.click();
+        });
+
+        // ── Clear Log ──────────────────────────────────────────────
+        clearLogBtn.addEventListener('click', () => {
+            PipeGuard.clearEvents();
+            updateLogTimeline();
+        });
+
+        // ── Inference Loop — Real AI Predictions ───────────────────
+        function startInferenceLoop() {
+            if (inferenceLoop) return;
+            inferenceLoop = setInterval(async () => {
+                if (!stream || video.readyState < 2) return;
+
+                // Capture frame to canvas (224x224 for model input)
+                const ctx = captureCanvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, 224, 224);
+                const base64 = captureCanvas.toDataURL('image/jpeg', 0.7);
+
+                try {
+                    const resp = await fetch(PipeGuard.getBackendUrl() + '/predict', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: base64 }),
+                        signal: AbortSignal.timeout(5000)
+                    });
+
+                    if (!resp.ok) throw new Error('Server error ' + resp.status);
+                    const data = await resp.json();
+
+                    // Update UI
+                    updateDetectionUI(data.label, data.confidence, data.scores, data.inference_ms);
+
+                    // Log event if above threshold
+                    const threshold = slider.value / 100;
+                    if (data.confidence >= threshold) {
+                        PipeGuard.addEvent(data.label, data.confidence, data.scores);
+                    }
+
+                    // FPS tracking
+                    frameCount++;
+                    const now = Date.now();
+                    if (now - lastFpsTime >= 1000) {
+                        document.getElementById('feedFPS').textContent = frameCount + ' FPS';
+                        frameCount = 0;
+                        lastFpsTime = now;
+                    }
+
+                } catch (err) {
+                    document.getElementById('metricBackend').textContent = 'ERROR';
+                    document.getElementById('metricBackend').style.color = 'var(--error)';
+                    console.warn('[PipeGuard] Inference error:', err.message);
+                }
+            }, 200); // ~5 FPS
+        }
+
+        function stopInference() {
+            if (inferenceLoop) { clearInterval(inferenceLoop); inferenceLoop = null; }
+        }
+
+        // ── Update Detection UI ────────────────────────────────────
+        function updateDetectionUI(label, confidence, scores, inferenceMs) {
+            const result = document.getElementById('detectionResult');
+            const status = document.getElementById('detectionStatus');
+            const fill = document.getElementById('confidenceFill');
+
+            // Status card color
+            result.className = 'glass-card detection-result ' + label.toLowerCase();
+            status.textContent = label;
+
+            // Confidence bar
+            const pct = (confidence * 100);
+            fill.style.width = pct + '%';
+            fill.className = 'confidence-fill ' + (pct > 85 ? 'high' : pct > 60 ? 'medium' : 'low');
+
+            document.getElementById('confidenceValue').textContent = confidence.toFixed(3);
+            document.getElementById('metricPrediction').textContent = label;
+            document.getElementById('metricConfidence').textContent = confidence.toFixed(3);
+            document.getElementById('metricInference').textContent = inferenceMs.toFixed(0) + ' ms';
+
+            // Backend status
+            document.getElementById('metricBackend').textContent = 'ONLINE';
+            document.getElementById('metricBackend').style.color = 'var(--secondary)';
+
+            // Update log
+            updateLogTimeline();
+        }
+
+        // ── Update Detection Log Timeline ──────────────────────────
+        function updateLogTimeline() {
+            const timeline = document.getElementById('logTimeline');
+            const recent = PipeGuard.getStats().recentEvents.slice(0, 15);
+
+            if (recent.length === 0) {
+                timeline.innerHTML = '<div class="timeline-item"><div class="timeline-dot info"></div><div class="timeline-content"><h4>System Ready</h4><p>No detections yet</p></div></div>';
+                return;
+            }
+
+            timeline.innerHTML = recent.map(e => {
+                const dotClass = e.label === 'NORMAL' ? 'success' : e.label === 'CORROSION' ? 'warning' : 'info';
+                const color = e.label === 'NORMAL' ? 'var(--secondary)' : e.label === 'CORROSION' ? 'var(--warning)' : 'var(--error)';
+                return `<div class="timeline-item">
+                    <div class="timeline-dot ${dotClass}" style="background:${color};box-shadow:0 0 8px ${color};"></div>
+                    <div class="timeline-content">
+                        <h4 style="color:${color}">${e.label}</h4>
+                        <p>Confidence: ${(e.confidence * 100).toFixed(1)}%</p>
+                        <span class="timeline-time">${PipeGuard.timeAgo(e.timestamp)}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── Timestamp update ───────────────────────────────────────
+        setInterval(() => {
+            const ts = document.getElementById('feedTimestamp');
+            if (ts) ts.textContent = new Date().toLocaleTimeString();
+        }, 1000);
+
+        // Auto-refresh log every 3s
+        setInterval(updateLogTimeline, 3000);
+    </script>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PipeGuard AI Live Feed - Real-time camera monitoring with AI corrosion and leakage detection.">
+    <title>Live Feed | PipeGuard AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand"><div class="brand-icon"><span class="material-icons-outlined">shield</span></div><div class="brand-text"><h2>PipeGuard</h2><span class="brand-tag">AI CONTROL CENTER</span></div></div>
+        <div class="sidebar-status"><span class="status-dot"></span><span>System Active</span></div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="index.html"><span class="material-icons-outlined">dashboard</span><span>Dashboard</span></a></li>
+            <li class="nav-item active"><a href="live-feed.html"><span class="material-icons-outlined">videocam</span><span>Live Feed</span></a></li>
+            <li class="nav-item"><a href="pipeline-monitor.html"><span class="material-icons-outlined">route</span><span>Pipeline Monitor</span></a></li>
+            <li class="nav-item"><a href="anomaly-detection.html"><span class="material-icons-outlined">warning</span><span>Anomaly Detection</span></a></li>
+            <li class="nav-item"><a href="analytics.html"><span class="material-icons-outlined">analytics</span><span>Analytics</span></a></li>
+            <li class="nav-item"><a href="settings.html"><span class="material-icons-outlined">settings</span><span>Settings</span></a></li>
+        </ul>
+        <div class="sidebar-footer"><div class="user-card"><div class="user-avatar">AR</div><div class="user-info"><span class="user-name">Admin</span><span class="user-role">Chief Engineer</span></div></div></div>
+    </nav>
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="top-bar-left"><button class="menu-toggle" id="menuToggle"><span class="material-icons-outlined">menu</span></button><h1 class="page-title">Live Feed</h1><span class="page-subtitle">Real-Time Camera Detection</span></div>
+            <div class="top-bar-right"><div class="live-clock" id="liveClock"></div></div>
+        </header>
+        <section class="feed-grid">
+            <div class="glass-card">
+                <div class="card-header"><h3><span class="material-icons-outlined">videocam</span> Camera Feed</h3><span class="live-badge" id="liveBadge" style="opacity:0.4">● OFFLINE</span></div>
+                <div class="video-container" id="videoContainer">
+                    <img id="cameraFeed" crossorigin="anonymous" alt="MJPEG Stream" style="width:100%;height:auto;display:block;">
+                    <canvas id="captureCanvas" style="display:none;"></canvas>
+                    <canvas id="overlayCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;"></canvas>
+                    <div class="video-overlay"><span style="font-size:11px;color:var(--outline)" id="cameraLabel">CAM-01 | AWAITING</span></div>
+                    <div class="video-overlay-bottom">
+                        <span style="font-size:11px;color:var(--on-surface);" id="feedTimestamp"></span>
+                        <span style="font-size:11px;color:var(--secondary);" id="feedFPS">-- FPS</span>
+                    </div>
+                </div>
+                <div class="controls-row" style="margin-top:16px;">
+                    <button class="btn-primary" id="startCamBtn"><span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">play_arrow</span> Start Phone Cam</button>
+                    <button class="btn-ghost" id="stopCamBtn"><span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">stop</span> Stop</button>
+                    <button class="btn-ghost" id="screenshotBtn"><span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">photo_camera</span> Snapshot</button>
+                </div>
+            </div>
+            <div class="detection-panel">
+                <div class="glass-card detection-result normal" id="detectionResult">
+                    <span class="detection-label">CURRENT STATUS</span>
+                    <span class="detection-status" id="detectionStatus">AWAITING</span>
+                    <div class="confidence-bar-container">
+                        <span style="font-size:10px;color:var(--outline);">Confidence</span>
+                        <div class="confidence-bar"><div class="confidence-fill high" id="confidenceFill" style="width:0%"></div></div>
+                        <span style="font-size:18px;font-weight:700;font-family:var(--font-head);display:block;margin-top:6px;" id="confidenceValue">--</span>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-header"><h3>Detection Controls</h3></div>
+                    <div class="setting-row"><div><span class="setting-label">Confidence Threshold</span><span class="setting-desc" style="display:block">Min confidence for alert</span></div>
+                        <input type="range" min="0" max="100" value="60" id="confidenceSlider" style="accent-color:var(--primary);width:120px;">
+                    </div>
+                    <div style="text-align:right;margin-top:4px;"><span style="font-size:12px;font-family:var(--font-head);color:var(--primary);" id="thresholdVal">0.60</span></div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-header"><h3>Live Metrics</h3></div>
+                    <div style="display:grid;gap:10px;">
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:12px;color:var(--outline);">Prediction</span><span style="font-size:13px;font-weight:600;" id="metricPrediction">--</span></div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:12px;color:var(--outline);">Confidence</span><span style="font-size:13px;font-weight:600;" id="metricConfidence">--</span></div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:12px;color:var(--outline);">Inference</span><span style="font-size:13px;font-weight:600;color:var(--primary);" id="metricInference">-- ms</span></div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--glass-border);">
+                            <span style="font-size:12px;color:var(--outline);">Backend</span><span style="font-size:13px;font-weight:600;" id="metricBackend" style="color:var(--outline);">CHECKING...</span></div>
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;">
+                            <span style="font-size:12px;color:var(--outline);">Camera</span><span style="font-size:13px;font-weight:600;color:var(--error);" id="metricCamera">OFFLINE</span></div>
+                    </div>
+                </div>
+                <div class="glass-card" id="detectionLog">
+                    <div class="card-header"><h3>Detection Log</h3><button class="btn-ghost" style="padding:4px 10px;font-size:10px;" id="clearLogBtn">Clear</button></div>
+                    <div class="activity-timeline" id="logTimeline">
+                        <div class="timeline-item"><div class="timeline-dot info"></div><div class="timeline-content"><h4>System Ready</h4><p>Awaiting camera input & backend connection</p></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="pipeguard-state.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // ── DOM References ─────────────────────────────────────────
+        const startBtn = document.getElementById('startCamBtn');
+        const stopBtn = document.getElementById('stopCamBtn');
+        const screenshotBtn = document.getElementById('screenshotBtn');
+        const feedImg = document.getElementById('cameraFeed');
+        const captureCanvas = document.getElementById('captureCanvas');
+        const slider = document.getElementById('confidenceSlider');
+        const thresholdVal = document.getElementById('thresholdVal');
+        const clearLogBtn = document.getElementById('clearLogBtn');
+        
+        // ── CONFIG ──────────────────────────────────────────────────
+        const PHONE_STREAM_URL = "http://192.0.0.4:8080/video";
+        let streamActive = false;
+        
+        let inferenceLoop = null;
+        let frameCount = 0;
+        let lastFpsTime = Date.now();
+
+        slider.addEventListener('input', () => { thresholdVal.textContent = (slider.value / 100).toFixed(2); });
+
+        // ── Check backend on load ──────────────────────────────────
+        (async () => {
+            const health = await PipeGuard.checkBackend();
+            const el = document.getElementById('metricBackend');
+            if (health) {
+                el.textContent = 'ONLINE';
+                el.style.color = 'var(--secondary)';
+            } else {
+                el.textContent = 'OFFLINE';
+                el.style.color = 'var(--error)';
+            }
+        })();
+
+        // ── Start Phone Camera (Image-based MJPEG Stream) ──────────
+        startBtn.addEventListener('click', () => {
+            console.log('[PipeGuard] Starting MJPEG Image stream...');
+
+            // Set crossOrigin so canvas can extract pixels
+            feedImg.crossOrigin = 'anonymous';
+            feedImg.src = PHONE_STREAM_URL;
+            streamActive = true;
+
+            console.log('[PipeGuard] img.src assigned →', PHONE_STREAM_URL);
+
+            document.getElementById('metricCamera').textContent = 'PHONE-LINK';
+            document.getElementById('metricCamera').style.color = 'var(--secondary)';
+            document.getElementById('liveBadge').style.opacity = '1';
+            document.getElementById('liveBadge').innerHTML = '● LIVE';
+            document.getElementById('cameraLabel').textContent = 'CAM-PHONE | 192.0.0.4';
+
+            // Give the MJPEG stream time to deliver the first frame
+            setTimeout(() => {
+                captureCanvas.width = 224;
+                captureCanvas.height = 224;
+                console.log('[PipeGuard] Buffer ready. Launching inference loop.');
+                startInferenceLoop();
+            }, 1500);
+        });
+
+        // ── Stop Camera ────────────────────────────────────────────
+        stopBtn.addEventListener('click', () => {
+            stopInference();
+            feedImg.src = '';
+            streamActive = false;
+            document.getElementById('metricCamera').textContent = 'OFFLINE';
+            document.getElementById('metricCamera').style.color = 'var(--error)';
+            document.getElementById('liveBadge').style.opacity = '0.4';
+            document.getElementById('liveBadge').innerHTML = '● OFFLINE';
+            document.getElementById('cameraLabel').textContent = 'CAM-01 | STOPPED';
+        });
+
+        // ── Screenshot ─────────────────────────────────────────────
+        screenshotBtn.addEventListener('click', () => {
+            if (!streamActive) return;
+            const c = document.createElement('canvas');
+            c.width = feedImg.naturalWidth || 640; 
+            c.height = feedImg.naturalHeight || 480;
+            c.getContext('2d').drawImage(feedImg, 0, 0);
+            const link = document.createElement('a');
+            link.download = `pipeguard_snapshot_${Date.now()}.png`;
+            link.href = c.toDataURL('image/png');
+            link.click();
+        });
+
+        // ── Clear Log ──────────────────────────────────────────────
+        clearLogBtn.addEventListener('click', () => {
+            PipeGuard.clearEvents();
+            updateLogTimeline();
+        });
+
+        // ── Inference Loop (Image-based MJPEG Capture) ──────────────
+        function startInferenceLoop() {
+            if (inferenceLoop) return;
+            inferenceLoop = setInterval(async () => {
+                if (!streamActive || !feedImg.src) return;
+
+                const ctx = captureCanvas.getContext('2d');
+                ctx.drawImage(feedImg, 0, 0, 224, 224);
+                const base64 = captureCanvas.toDataURL('image/jpeg', 0.7);
+
+                try {
+                    const resp = await fetch(PipeGuard.getBackendUrl() + '/predict', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: base64 }),
+                        signal: AbortSignal.timeout(4000)
+                    });
+
+                    if (!resp.ok) throw new Error('Server error');
+                    const data = await resp.json();
+
+                    updateDetectionUI(data.label, data.confidence, data.scores, data.inference_ms);
+
+                    const threshold = slider.value / 100;
+                    if (data.confidence >= threshold) {
+                        PipeGuard.addEvent(data.label, data.confidence, data.scores);
+                    }
+
+                    frameCount++;
+                    const now = Date.now();
+                    if (now - lastFpsTime >= 1000) {
+                        document.getElementById('feedFPS').textContent = frameCount + ' FPS';
+                        frameCount = 0;
+                        lastFpsTime = now;
+                    }
+                } catch (err) {
+                    console.warn('[PipeGuard] AI Bridge Error:', err.message);
+                }
+            }, 250); // 4 FPS for network stability
+        }
+
+        function stopInference() {
+            if (inferenceLoop) { clearInterval(inferenceLoop); inferenceLoop = null; }
+        }
+
+        function updateDetectionUI(label, confidence, scores, inferenceMs) {
+            const result = document.getElementById('detectionResult');
+            const status = document.getElementById('detectionStatus');
+            const fill = document.getElementById('confidenceFill');
+
+            result.className = 'glass-card detection-result ' + label.toLowerCase();
+            status.textContent = label;
+
+            const pct = (confidence * 100);
+            fill.style.width = pct + '%';
+            fill.className = 'confidence-fill ' + (pct > 85 ? 'high' : pct > 60 ? 'medium' : 'low');
+
+            document.getElementById('confidenceValue').textContent = confidence.toFixed(3);
+            document.getElementById('metricPrediction').textContent = label;
+            document.getElementById('metricConfidence').textContent = confidence.toFixed(3);
+            document.getElementById('metricInference').textContent = (inferenceMs || 0).toFixed(0) + ' ms';
+            
+            updateLogTimeline();
+        }
+
+        function updateLogTimeline() {
+            const timeline = document.getElementById('logTimeline');
+            const recent = PipeGuard.getStats().recentEvents.slice(0, 15);
+            if (recent.length === 0) return;
+
+            timeline.innerHTML = recent.map(e => {
+                const dotClass = e.label === 'NORMAL' ? 'success' : e.label === 'CORROSION' ? 'warning' : 'info';
+                const color = e.label === 'NORMAL' ? 'var(--secondary)' : e.label === 'CORROSION' ? 'var(--warning)' : 'var(--error)';
+                return `<div class="timeline-item">
+                    <div class="timeline-dot ${dotClass}" style="background:${color};box-shadow:0 0 8px ${color};"></div>
+                    <div class="timeline-content">
+                        <h4 style="color:${color}">${e.label}</h4>
+                        <p>Confidence: ${(e.confidence * 100).toFixed(1)}%</p>
+                        <span class="timeline-time">${PipeGuard.timeAgo(e.timestamp)}</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        setInterval(() => {
+            const ts = document.getElementById('feedTimestamp');
+            if (ts) ts.textContent = new Date().toLocaleTimeString();
+        }, 1000);
+    </script>
+</body>
+</html>

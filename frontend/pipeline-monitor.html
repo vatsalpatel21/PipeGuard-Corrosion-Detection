@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline Monitor | PipeGuard AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand"><div class="brand-icon"><span class="material-icons-outlined">shield</span></div><div class="brand-text"><h2>PipeGuard</h2><span class="brand-tag">AI CONTROL CENTER</span></div></div>
+        <div class="sidebar-status"><span class="status-dot"></span><span>System Active</span></div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="index.html"><span class="material-icons-outlined">dashboard</span><span>Dashboard</span></a></li>
+            <li class="nav-item"><a href="live-feed.html"><span class="material-icons-outlined">videocam</span><span>Live Feed</span></a></li>
+            <li class="nav-item active"><a href="pipeline-monitor.html"><span class="material-icons-outlined">route</span><span>Pipeline Monitor</span></a></li>
+            <li class="nav-item"><a href="anomaly-detection.html"><span class="material-icons-outlined">warning</span><span>Anomaly Detection</span></a></li>
+            <li class="nav-item"><a href="analytics.html"><span class="material-icons-outlined">analytics</span><span>Analytics</span></a></li>
+            <li class="nav-item"><a href="settings.html"><span class="material-icons-outlined">settings</span><span>Settings</span></a></li>
+        </ul>
+        <div class="sidebar-footer"><div class="user-card"><div class="user-avatar">AR</div><div class="user-info"><span class="user-name">Admin</span><span class="user-role">Chief Engineer</span></div></div></div>
+    </nav>
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="top-bar-left"><button class="menu-toggle" id="menuToggle"><span class="material-icons-outlined">menu</span></button><h1 class="page-title">Pipeline Monitor</h1><span class="page-subtitle">System-Wide Status</span></div>
+            <div class="top-bar-right"><div class="live-clock" id="liveClock"></div></div>
+        </header>
+        <section class="pipeline-grid">
+            <div class="glass-card pipeline-stat">
+                <span class="material-icons-outlined" style="font-size:32px;color:var(--primary);">sensors</span>
+                <span class="stat-value" id="pipeTotalUnits">0</span><span class="stat-label">TOTAL DETECTIONS</span>
+            </div>
+            <div class="glass-card pipeline-stat">
+                <span class="material-icons-outlined" style="font-size:32px;color:var(--secondary);">speed</span>
+                <span class="stat-value" id="pipeHealthPct">--</span><span class="stat-label">SYSTEM HEALTH</span>
+            </div>
+            <div class="glass-card pipeline-stat">
+                <span class="material-icons-outlined" style="font-size:32px;color:var(--secondary);">check_circle</span>
+                <span class="stat-value" id="pipeNormalPct">--</span><span class="stat-label">NORMAL RATE</span>
+                <span style="font-size:11px;color:var(--secondary);margin-top:4px;" id="pipeNormalTrend"></span>
+            </div>
+            <div class="glass-card" style="grid-column:1/3;">
+                <div class="card-header"><h3><span class="material-icons-outlined">route</span> Pipeline Overview</h3><span class="status-badge online" id="pipeOnlineBadge"><span class="pulse-dot"></span>MONITORING</span></div>
+                <p style="font-size:12px;color:var(--outline);margin-bottom:16px;" id="pipelineDesc">System ID: PG-AI | Status: Awaiting data</p>
+                <div style="height:200px;background:linear-gradient(135deg,rgba(0,242,255,0.03),rgba(0,255,136,0.03));border-radius:8px;display:grid;place-items:center;border:1px dashed var(--outline-dim);position:relative;overflow:hidden;" id="pipelineVizContainer">
+                    <div style="text-align:center;" id="pipelineViz">
+                        <span class="material-icons-outlined" style="font-size:48px;color:var(--primary-dim);">map</span>
+                        <p style="color:var(--outline);font-size:12px;margin-top:8px;">Pipeline Network Visualization</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card">
+                <div class="card-header"><h3>Maintenance Log</h3></div>
+                <div class="maintenance-list" id="maintenanceList">
+                    <div style="text-align:center;padding:20px;color:var(--outline);font-size:12px;">No maintenance events yet.</div>
+                </div>
+            </div>
+            <div class="glass-card full-width">
+                <div class="card-header"><h3>Sector Status Table</h3><button class="btn-ghost" style="padding:6px 14px;font-size:12px;" id="exportCsvBtn">Export CSV</button></div>
+                <table class="pipeline-status-table">
+                    <thead><tr><th>SECTOR</th><th>TOTAL</th><th>NORMAL</th><th>CORROSION</th><th>LEAKAGE</th><th>HEALTH</th><th>STATUS</th></tr></thead>
+                    <tbody id="sectorTableBody">
+                        <tr><td colspan="7" style="text-align:center;color:var(--outline);padding:20px;">Awaiting detection data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <script src="pipeguard-state.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.getElementById('exportCsvBtn').addEventListener('click', () => PipeGuard.exportCSV());
+
+        // Simulated sectors — events distributed round-robin
+        const SECTORS = [
+            { id: 'PG-2847', name: '7G-South' },
+            { id: 'PG-1203', name: '4A-North' },
+            { id: 'PG-0891', name: '9B-East' },
+            { id: 'PG-3302', name: '2C-West' },
+            { id: 'PG-0445', name: '11D-Central' }
+        ];
+
+        function updatePipelinePage() {
+            const stats = PipeGuard.getStats();
+            const events = PipeGuard.getEvents();
+
+            // Top metrics
+            document.getElementById('pipeTotalUnits').textContent = stats.total.toLocaleString();
+            document.getElementById('pipeHealthPct').textContent = stats.healthPct + '%';
+            document.getElementById('pipeNormalPct').textContent = stats.normalPct + '%';
+            document.getElementById('pipeNormalTrend').textContent = stats.total > 0 ? `${stats.normal} of ${stats.total} scans` : '';
+
+            // Pipeline description
+            const desc = document.getElementById('pipelineDesc');
+            if (stats.total > 0) {
+                desc.textContent = `Total Scans: ${stats.total} | Active Alerts: ${stats.activeAlerts} | Last scan: ${stats.recentEvents.length > 0 ? PipeGuard.timeAgo(stats.recentEvents[0].timestamp) : 'N/A'}`;
+            }
+
+            // Pipeline visualization — show colored indicators
+            const vizContainer = document.getElementById('pipelineViz');
+            if (stats.total > 0) {
+                const lastLabel = stats.recentEvents[0]?.label || 'NORMAL';
+                const color = lastLabel === 'NORMAL' ? 'var(--secondary)' : lastLabel === 'CORROSION' ? 'var(--warning)' : 'var(--error)';
+                vizContainer.innerHTML = `
+                    <div style="display:flex;gap:24px;align-items:center;justify-content:center;width:100%;">
+                        ${SECTORS.map((s, i) => {
+                            const sectorEvents = events.filter((_, ei) => ei % SECTORS.length === i);
+                            const hasAnomaly = sectorEvents.some(e => e.label !== 'NORMAL' && Date.now() - new Date(e.timestamp).getTime() < 300000);
+                            const sColor = hasAnomaly ? 'var(--error)' : 'var(--secondary)';
+                            const pulse = hasAnomaly ? 'animation:pulse-dot 1.5s infinite;' : '';
+                            return `<div style="text-align:center;">
+                                <div style="width:32px;height:32px;border-radius:50%;background:${sColor};margin:0 auto 6px;box-shadow:0 0 12px ${sColor};${pulse}"></div>
+                                <span style="font-size:9px;color:var(--outline);letter-spacing:0.05em;">${s.name}</span>
+                            </div>`;
+                        }).join('<div style="width:40px;height:2px;background:var(--outline-dim);"></div>')}
+                    </div>`;
+            }
+
+            // Maintenance log — last 5 corrosion/leakage events
+            const maintList = document.getElementById('maintenanceList');
+            const maintEvents = PipeGuard.getAlerts(5);
+            if (maintEvents.length === 0) {
+                maintList.innerHTML = '<div style="text-align:center;padding:20px;color:var(--outline);font-size:12px;">No maintenance events yet.</div>';
+            } else {
+                maintList.innerHTML = maintEvents.map(e => {
+                    const t = new Date(e.timestamp);
+                    const dateStr = t.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+                    const pillClass = e.label === 'LEAKAGE' ? 'offline' : 'maintenance';
+                    const pillText = e.label === 'LEAKAGE' ? 'CRITICAL' : 'WARNING';
+                    return `<div class="maintenance-item">
+                        <div><strong>${e.label} Detection</strong><span class="maintenance-date" style="display:block;">${dateStr} • ${(e.confidence * 100).toFixed(1)}% conf</span></div>
+                        <span class="status-pill ${pillClass}">${pillText}</span>
+                    </div>`;
+                }).join('');
+            }
+
+            // Sector status table
+            const tbody = document.getElementById('sectorTableBody');
+            if (events.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--outline);padding:20px;">Awaiting detection data...</td></tr>';
+            } else {
+                tbody.innerHTML = SECTORS.map((s, idx) => {
+                    const sectorEvents = events.filter((_, i) => i % SECTORS.length === idx);
+                    const total = sectorEvents.length;
+                    const normalCount = sectorEvents.filter(e => e.label === 'NORMAL').length;
+                    const corrosionCount = sectorEvents.filter(e => e.label === 'CORROSION').length;
+                    const leakageCount = sectorEvents.filter(e => e.label === 'LEAKAGE').length;
+                    const health = total > 0 ? ((normalCount / total) * 100).toFixed(1) : '100.0';
+                    const h = parseFloat(health);
+
+                    let statusClass, statusText;
+                    if (leakageCount > 0 && sectorEvents.slice(-3).some(e => e.label === 'LEAKAGE')) {
+                        statusClass = 'offline'; statusText = 'ALERT';
+                    } else if (corrosionCount > 0 && sectorEvents.slice(-5).some(e => e.label === 'CORROSION')) {
+                        statusClass = 'maintenance'; statusText = 'WARNING';
+                    } else {
+                        statusClass = 'active'; statusText = 'ACTIVE';
+                    }
+
+                    return `<tr>
+                        <td>${s.id}</td><td>${s.name}</td>
+                        <td>${normalCount}</td><td>${corrosionCount}</td><td>${leakageCount}</td>
+                        <td>${health}%</td>
+                        <td><span class="status-pill ${statusClass}">${statusText}</span></td>
+                    </tr>`;
+                }).join('');
+            }
+        }
+
+        // Init
+        updatePipelinePage();
+        setInterval(updatePipelinePage, 3000);
+    </script>
+</body>
+</html>

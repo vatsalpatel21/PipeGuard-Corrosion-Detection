@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | PipeGuard AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand"><div class="brand-icon"><span class="material-icons-outlined">shield</span></div><div class="brand-text"><h2>PipeGuard</h2><span class="brand-tag">AI CONTROL CENTER</span></div></div>
+        <div class="sidebar-status"><span class="status-dot"></span><span>System Active</span></div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="index.html"><span class="material-icons-outlined">dashboard</span><span>Dashboard</span></a></li>
+            <li class="nav-item"><a href="live-feed.html"><span class="material-icons-outlined">videocam</span><span>Live Feed</span></a></li>
+            <li class="nav-item"><a href="pipeline-monitor.html"><span class="material-icons-outlined">route</span><span>Pipeline Monitor</span></a></li>
+            <li class="nav-item"><a href="anomaly-detection.html"><span class="material-icons-outlined">warning</span><span>Anomaly Detection</span></a></li>
+            <li class="nav-item"><a href="analytics.html"><span class="material-icons-outlined">analytics</span><span>Analytics</span></a></li>
+            <li class="nav-item active"><a href="settings.html"><span class="material-icons-outlined">settings</span><span>Settings</span></a></li>
+        </ul>
+        <div class="sidebar-footer"><div class="user-card"><div class="user-avatar">AR</div><div class="user-info"><span class="user-name">Admin</span><span class="user-role">Chief Engineer</span></div></div></div>
+    </nav>
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="top-bar-left"><button class="menu-toggle" id="menuToggle"><span class="material-icons-outlined">menu</span></button><h1 class="page-title">Settings & Configuration</h1></div>
+            <div class="top-bar-right"><button class="btn-primary" style="padding:8px 16px;font-size:12px;" id="saveSettings">Save Changes</button></div>
+        </header>
+        <section class="settings-layout">
+            <div class="glass-card" style="padding:16px;">
+                <h4 style="font-size:12px;color:var(--outline);margin-bottom:12px;letter-spacing:0.1em;">CONTROL PANEL</h4>
+                <div class="settings-nav">
+                    <div class="settings-nav-item active" onclick="showSection('general')"><span class="material-icons-outlined">settings</span>General</div>
+                    <div class="settings-nav-item" onclick="showSection('ai')"><span class="material-icons-outlined">psychology</span>AI Engine</div>
+                    <div class="settings-nav-item" onclick="showSection('data')"><span class="material-icons-outlined">storage</span>Data Management</div>
+                    <div class="settings-nav-item" onclick="showSection('notif')"><span class="material-icons-outlined">notifications_active</span>Notifications</div>
+                </div>
+                <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--outline-dim);">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div class="user-avatar" style="width:40px;height:40px;">AR</div>
+                        <div><span style="font-size:13px;font-weight:600;display:block;">Admin</span><span style="font-size:10px;color:var(--outline);">Lead Administrator</span></div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="glass-card" id="section-general">
+                    <h2 style="font-size:20px;margin-bottom:4px;">General Settings</h2>
+                    <p style="font-size:12px;color:var(--outline);margin-bottom:24px;">Manage your core platform configurations and preferences.</p>
+                    <div class="setting-group">
+                        <h3>System Configuration</h3>
+                        <div class="setting-row"><div><span class="setting-label">System Name</span><span class="setting-desc">Display name for the control center</span></div><input type="text" class="text-input" value="PipeGuard AI" style="width:200px;"></div>
+                        <div class="setting-row"><div><span class="setting-label">Backend URL</span><span class="setting-desc">FastAPI server address for model inference</span></div><input type="text" class="text-input" id="backendUrlInput" style="width:240px;"></div>
+                        <div class="setting-row"><div><span class="setting-label">Confidence Threshold</span><span class="setting-desc">Minimum confidence to log detection events</span></div>
+                            <div style="display:flex;align-items:center;gap:8px;"><input type="range" min="10" max="100" id="settingsThreshold" style="accent-color:var(--primary);width:120px;"><span style="font-family:var(--font-head);color:var(--primary);font-size:13px;" id="thresholdDisplay">0.60</span></div>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Display Preferences</h3>
+                        <div class="setting-row"><div><span class="setting-label">System Theme</span><span class="setting-desc">Switch between light and dark visual modes</span></div><div class="toggle-switch on"></div></div>
+                        <div class="setting-row"><div><span class="setting-label">Scanline Effect</span><span class="setting-desc">Retro scanline overlay on interface</span></div><div class="toggle-switch on"></div></div>
+                        <div class="setting-row"><div><span class="setting-label">Alert Sounds</span><span class="setting-desc">Play sound on corrosion/leakage detection</span></div><div class="toggle-switch on" id="soundToggle"></div></div>
+                    </div>
+                    <div class="setting-group">
+                        <h3>AI Engine Status</h3>
+                        <div class="setting-row"><div><span class="setting-label">Backend Status</span></div><span style="font-family:var(--font-head);" id="backendStatus">CHECKING...</span></div>
+                        <div class="setting-row"><div><span class="setting-label">Model</span></div><span style="font-family:var(--font-head);color:var(--primary);" id="modelName">--</span></div>
+                        <div class="setting-row"><div><span class="setting-label">Total Predictions</span></div><span style="font-family:var(--font-head);color:var(--outline);" id="totalPredictions">--</span></div>
+                        <div class="setting-row"><div><span class="setting-label">Server Uptime</span></div><span style="font-family:var(--font-head);color:var(--outline);" id="serverUptime">--</span></div>
+                        <div class="setting-row"><div><span class="setting-label">Events in Log</span></div><span style="font-family:var(--font-head);color:var(--primary);" id="logCount">0</span></div>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Data Management</h3>
+                        <div class="setting-row">
+                            <div><span class="setting-label">Export Detection Log</span><span class="setting-desc">Download all events as CSV</span></div>
+                            <button class="btn-ghost" style="padding:6px 14px;font-size:12px;" id="exportCsvBtn">Export CSV</button>
+                        </div>
+                        <div class="setting-row">
+                            <div><span class="setting-label">Clear Event Log</span><span class="setting-desc">Delete all stored detection events</span></div>
+                            <button class="btn-ghost" style="padding:6px 14px;font-size:12px;border-color:var(--error);color:var(--error);" id="clearLogBtn">Clear All</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script src="pipeguard-state.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // ── Load settings ──────────────────────────────────────────
+        const settings = PipeGuard.getSettings();
+        const backendInput = document.getElementById('backendUrlInput');
+        const thresholdSlider = document.getElementById('settingsThreshold');
+        const thresholdDisplay = document.getElementById('thresholdDisplay');
+        const soundToggle = document.getElementById('soundToggle');
+
+        backendInput.value = settings.backendUrl || 'http://127.0.0.1:8000';
+        thresholdSlider.value = Math.round((settings.confidenceThreshold || 0.6) * 100);
+        thresholdDisplay.textContent = (thresholdSlider.value / 100).toFixed(2);
+        if (settings.soundEnabled === false) soundToggle.classList.remove('on');
+
+        thresholdSlider.addEventListener('input', () => {
+            thresholdDisplay.textContent = (thresholdSlider.value / 100).toFixed(2);
+        });
+
+        // ── Save settings ──────────────────────────────────────────
+        document.getElementById('saveSettings').addEventListener('click', () => {
+            const newSettings = {
+                backendUrl: backendInput.value.trim(),
+                confidenceThreshold: thresholdSlider.value / 100,
+                soundEnabled: soundToggle.classList.contains('on')
+            };
+            PipeGuard.saveSettings(newSettings);
+            const btn = document.getElementById('saveSettings');
+            btn.textContent = '✓ Saved!';
+            btn.style.background = 'var(--secondary)';
+            setTimeout(() => { btn.textContent = 'Save Changes'; btn.style.background = ''; }, 2000);
+        });
+
+        // ── Export / Clear ──────────────────────────────────────────
+        document.getElementById('exportCsvBtn').addEventListener('click', () => PipeGuard.exportCSV());
+        document.getElementById('clearLogBtn').addEventListener('click', () => {
+            if (confirm('Clear all detection events? This cannot be undone.')) {
+                PipeGuard.clearEvents();
+                updateSettingsInfo();
+                alert('Event log cleared.');
+            }
+        });
+
+        // ── Backend health check ───────────────────────────────────
+        async function updateSettingsInfo() {
+            // Log count
+            document.getElementById('logCount').textContent = PipeGuard.getEvents().length;
+
+            // Backend status
+            const health = await PipeGuard.checkBackend();
+            const statusEl = document.getElementById('backendStatus');
+            if (health) {
+                statusEl.textContent = 'ONLINE';
+                statusEl.style.color = 'var(--secondary)';
+                document.getElementById('modelName').textContent = health.model;
+                document.getElementById('totalPredictions').textContent = health.total_predictions;
+                const mins = Math.floor(health.uptime_seconds / 60);
+                document.getElementById('serverUptime').textContent = mins > 60 ? Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm' : mins + ' min';
+            } else {
+                statusEl.textContent = 'OFFLINE';
+                statusEl.style.color = 'var(--error)';
+                document.getElementById('modelName').textContent = '--';
+                document.getElementById('totalPredictions').textContent = '--';
+                document.getElementById('serverUptime').textContent = '--';
+            }
+        }
+
+        // Section navigation
+        function showSection(id) {
+            document.querySelectorAll('.settings-nav-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        // Init
+        updateSettingsInfo();
+        setInterval(updateSettingsInfo, 10000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics & Reports | PipeGuard AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="scanline-overlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand"><div class="brand-icon"><span class="material-icons-outlined">shield</span></div><div class="brand-text"><h2>PipeGuard</h2><span class="brand-tag">AI CONTROL CENTER</span></div></div>
+        <div class="sidebar-status"><span class="status-dot"></span><span>System Active</span></div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="index.html"><span class="material-icons-outlined">dashboard</span><span>Dashboard</span></a></li>
+            <li class="nav-item"><a href="live-feed.html"><span class="material-icons-outlined">videocam</span><span>Live Feed</span></a></li>
+            <li class="nav-item"><a href="pipeline-monitor.html"><span class="material-icons-outlined">route</span><span>Pipeline Monitor</span></a></li>
+            <li class="nav-item"><a href="anomaly-detection.html"><span class="material-icons-outlined">warning</span><span>Anomaly Detection</span></a></li>
+            <li class="nav-item active"><a href="analytics.html"><span class="material-icons-outlined">analytics</span><span>Analytics</span></a></li>
+            <li class="nav-item"><a href="settings.html"><span class="material-icons-outlined">settings</span><span>Settings</span></a></li>
+        </ul>
+        <div class="sidebar-footer"><div class="user-card"><div class="user-avatar">AR</div><div class="user-info"><span class="user-name">Admin</span><span class="user-role">Chief Engineer</span></div></div></div>
+    </nav>
+    <main class="main-content">
+        <header class="top-bar">
+            <div class="top-bar-left"><button class="menu-toggle" id="menuToggle"><span class="material-icons-outlined">menu</span></button><h1 class="page-title">Analytics & Reports</h1><span class="page-subtitle">Performance Intelligence</span></div>
+            <div class="top-bar-right"><button class="btn-primary" style="padding:8px 16px;font-size:12px;" id="exportBtn"><span class="material-icons-outlined" style="font-size:16px;vertical-align:middle;">download</span> Export CSV</button><div class="live-clock" id="liveClock"></div></div>
+        </header>
+        <section class="analytics-grid">
+            <div class="glass-card">
+                <div class="card-header"><h3>Confidence Trend</h3><span style="font-size:11px;color:var(--outline);" id="chartPeriod">Live Data</span></div>
+                <canvas id="perfChart" style="width:100%;height:200px;"></canvas>
+            </div>
+            <div class="glass-card">
+                <div class="card-header"><h3>Detection Distribution</h3></div>
+                <div style="display:flex;align-items:center;gap:24px;padding:20px 0;">
+                    <div style="position:relative;width:140px;height:140px;flex-shrink:0;">
+                        <svg viewBox="0 0 120 120" style="transform:rotate(-90deg);width:100%;height:100%;" id="donutChart">
+                            <circle cx="60" cy="60" r="48" fill="none" stroke="var(--surface-bright)" stroke-width="16"/>
+                            <circle cx="60" cy="60" r="48" fill="none" stroke="var(--secondary)" stroke-width="16" id="donutNormal" stroke-dasharray="0 301.6" stroke-linecap="round"/>
+                            <circle cx="60" cy="60" r="48" fill="none" stroke="var(--warning)" stroke-width="16" id="donutCorrosion" stroke-dasharray="0 301.6" stroke-linecap="round"/>
+                            <circle cx="60" cy="60" r="48" fill="none" stroke="var(--error)" stroke-width="16" id="donutLeakage" stroke-dasharray="0 301.6" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div style="display:grid;gap:12px;flex:1;">
+                        <div class="condition-item"><span class="condition-dot normal"></span><span>Normal Operations</span><span class="condition-value" id="distNormal">--</span></div>
+                        <div class="condition-item"><span class="condition-dot corrosion"></span><span>Corrosion Events</span><span class="condition-value" id="distCorrosion">--</span></div>
+                        <div class="condition-item"><span class="condition-dot leakage"></span><span>Leakage Events</span><span class="condition-value" id="distLeakage">--</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-card">
+                <div class="card-header"><h3>Sector Health</h3></div>
+                <div style="display:grid;gap:12px;" id="sectorBars">
+                    <div style="text-align:center;padding:20px;color:var(--outline);font-size:12px;">Awaiting detection data...</div>
+                </div>
+            </div>
+            <div class="glass-card">
+                <div class="card-header"><h3><span class="material-icons-outlined">psychology</span> AI Model Stats</h3></div>
+                <p style="font-size:11px;color:var(--outline);margin-bottom:16px;">MobileNetV2 • 3 Classes • 224×224</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                    <div style="text-align:center;padding:16px;background:rgba(0,255,136,0.05);border-radius:8px;border:1px solid rgba(0,255,136,0.1);"><span style="font-size:28px;font-weight:700;font-family:var(--font-head);color:var(--secondary);display:block;" id="statConfidence">--</span><span style="font-size:10px;color:var(--outline);letter-spacing:0.1em;">AVG CONFIDENCE</span></div>
+                    <div style="text-align:center;padding:16px;background:rgba(0,242,255,0.05);border-radius:8px;border:1px solid rgba(0,242,255,0.1);"><span style="font-size:28px;font-weight:700;font-family:var(--font-head);color:var(--primary);display:block;" id="statTotal">--</span><span style="font-size:10px;color:var(--outline);letter-spacing:0.1em;">TOTAL SCANS</span></div>
+                </div>
+            </div>
+            <div class="glass-card full-width">
+                <div class="card-header"><h3>Detection Log</h3><button class="btn-ghost" style="padding:6px 14px;font-size:12px;" id="exportLogBtn">Export CSV</button></div>
+                <div style="display:grid;gap:8px;" id="reportsList">
+                    <div style="text-align:center;padding:20px;color:var(--outline);font-size:13px;">No detection data yet.</div>
+                </div>
+            </div>
+        </section>
+        <div style="display:flex;gap:16px;margin-top:16px;">
+            <div class="glass-card" style="flex:1;padding:12px 20px;display:flex;align-items:center;gap:10px;border-color:rgba(0,242,255,0.15);">
+                <span class="material-icons-outlined" style="color:var(--primary);font-size:16px;">lock</span><span style="font-size:11px;color:var(--primary);letter-spacing:0.05em;">ENCRYPTED CONNECTION ACTIVE</span>
+            </div>
+            <div class="glass-card" style="flex:1;padding:12px 20px;display:flex;align-items:center;gap:10px;">
+                <span class="material-icons-outlined" style="color:var(--outline);font-size:16px;">memory</span><span style="font-size:11px;color:var(--outline);letter-spacing:0.05em;" id="engineVersion">MOBILENETV2 CLASSIFIER</span>
+            </div>
+            <div class="glass-card" style="flex:1;padding:12px 20px;display:flex;align-items:center;gap:10px;">
+                <span class="material-icons-outlined" style="color:var(--secondary);font-size:16px;">sync</span><span style="font-size:11px;color:var(--secondary);letter-spacing:0.05em;" id="syncStatus">DATA: LIVE</span>
+            </div>
+        </div>
+    </main>
+    <script src="pipeguard-state.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // ── Export CSV ──────────────────────────────────────────────
+        document.getElementById('exportBtn').addEventListener('click', () => PipeGuard.exportCSV());
+        document.getElementById('exportLogBtn').addEventListener('click', () => PipeGuard.exportCSV());
+
+        // ── Confidence Trend Chart ─────────────────────────────────
+        function drawPerfChart() {
+            const canvas = document.getElementById('perfChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * dpr; canvas.height = 200 * dpr;
+            ctx.scale(dpr, dpr);
+            const w = rect.width, h = 200, pad = 30;
+
+            // Get real data: rolling confidence from last 20 events
+            const events = PipeGuard.getEvents().slice(-30);
+            const data = events.map(e => e.confidence * 100);
+
+            if (data.length < 2) {
+                ctx.fillStyle = '#849495'; ctx.font = '13px Inter'; ctx.textAlign = 'center';
+                ctx.fillText('Awaiting detection data...', w / 2, h / 2);
+                return;
+            }
+
+            const max = 100;
+            ctx.strokeStyle = 'rgba(132,148,149,0.1)'; ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 4; i++) {
+                const y = pad + ((h - pad * 2) / 4) * i;
+                ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(w - 10, y); ctx.stroke();
+                ctx.fillStyle = '#849495'; ctx.font = '10px Space Grotesk'; ctx.textAlign = 'right';
+                ctx.fillText(Math.round(100 - (100 / 4) * i) + '%', pad - 4, y + 3);
+            }
+
+            ctx.beginPath();
+            data.forEach((v, i) => {
+                const x = pad + ((w - pad - 10) / (data.length - 1)) * i;
+                const y = pad + (h - pad * 2) - (v / max) * (h - pad * 2);
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            });
+            ctx.strokeStyle = '#00f2ff'; ctx.lineWidth = 2.5; ctx.stroke();
+            ctx.lineTo(pad + (w - pad - 10), h - pad); ctx.lineTo(pad, h - pad); ctx.closePath();
+            ctx.fillStyle = 'rgba(0,242,255,0.08)'; ctx.fill();
+
+            // Draw dots on points
+            data.forEach((v, i) => {
+                const x = pad + ((w - pad - 10) / (data.length - 1)) * i;
+                const y = pad + (h - pad * 2) - (v / max) * (h - pad * 2);
+                ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = '#00f2ff'; ctx.fill();
+            });
+        }
+
+        // ── Update Analytics ───────────────────────────────────────
+        function updateAnalytics() {
+            const stats = PipeGuard.getStats();
+            const circ = 2 * Math.PI * 48; // donut circumference
+
+            // Distribution donut
+            const normalArc = (parseFloat(stats.normalPct) / 100) * circ;
+            const corrosionArc = (parseFloat(stats.corrosionPct) / 100) * circ;
+            const leakageArc = (parseFloat(stats.leakagePct) / 100) * circ;
+
+            document.getElementById('donutNormal').setAttribute('stroke-dasharray', `${normalArc} ${circ - normalArc}`);
+            document.getElementById('donutCorrosion').setAttribute('stroke-dasharray', `${corrosionArc} ${circ - corrosionArc}`);
+            document.getElementById('donutCorrosion').setAttribute('stroke-dashoffset', `-${normalArc}`);
+            document.getElementById('donutLeakage').setAttribute('stroke-dasharray', `${leakageArc} ${circ - leakageArc}`);
+            document.getElementById('donutLeakage').setAttribute('stroke-dashoffset', `-${normalArc + corrosionArc}`);
+
+            document.getElementById('distNormal').textContent = stats.normalPct + '%';
+            document.getElementById('distCorrosion').textContent = stats.corrosionPct + '%';
+            document.getElementById('distLeakage').textContent = stats.leakagePct + '%';
+
+            // AI stats
+            document.getElementById('statConfidence').textContent = (stats.avgConfidence * 100).toFixed(1) + '%';
+            document.getElementById('statTotal').textContent = stats.total.toLocaleString();
+
+            // Sector health — distribute events across simulated sectors
+            const sectors = ['Sector A', 'Sector B', 'Sector C', 'Sector D'];
+            const events = PipeGuard.getEvents();
+            const sectorData = sectors.map((name, idx) => {
+                const sectorEvents = events.filter((_, i) => i % sectors.length === idx);
+                const total = sectorEvents.length;
+                const normalCount = sectorEvents.filter(e => e.label === 'NORMAL').length;
+                const health = total > 0 ? ((normalCount / total) * 100).toFixed(1) : 100;
+                return { name, health };
+            });
+
+            const sectorBars = document.getElementById('sectorBars');
+            if (events.length === 0) {
+                sectorBars.innerHTML = '<div style="text-align:center;padding:20px;color:var(--outline);font-size:12px;">Awaiting detection data...</div>';
+            } else {
+                sectorBars.innerHTML = sectorData.map(s => {
+                    const h = parseFloat(s.health);
+                    const color = h > 90 ? 'var(--secondary)' : h > 70 ? 'var(--warning)' : 'var(--error)';
+                    const grad = h > 90 ? 'linear-gradient(90deg,var(--primary),var(--secondary))' : h > 70 ? 'linear-gradient(90deg,var(--warning),var(--tertiary))' : 'linear-gradient(90deg,var(--error),var(--warning))';
+                    return `<div>
+                        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span>${s.name}</span><span style="color:${color};">${s.health}%</span></div>
+                        <div style="height:8px;background:var(--surface-bright);border-radius:4px;"><div style="height:100%;width:${s.health}%;background:${grad};border-radius:4px;transition:width 0.5s;"></div></div>
+                    </div>`;
+                }).join('');
+            }
+
+            // Reports — show last 10 events as report entries
+            const reportsList = document.getElementById('reportsList');
+            const recent = stats.recentEvents.slice(0, 10);
+            if (recent.length === 0) {
+                reportsList.innerHTML = '<div style="text-align:center;padding:20px;color:var(--outline);font-size:13px;">No detection data yet.</div>';
+            } else {
+                reportsList.innerHTML = recent.map(e => {
+                    const t = new Date(e.timestamp);
+                    const dateStr = t.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    const timeStr = t.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    const color = e.label === 'NORMAL' ? 'var(--secondary)' : e.label === 'CORROSION' ? 'var(--warning)' : 'var(--error)';
+                    return `<div class="report-item">
+                        <div><strong style="color:${color}">${e.label}</strong> — ${(e.confidence * 100).toFixed(1)}% confidence
+                        <span class="report-meta" style="display:block;">${dateStr} ${timeStr}</span></div>
+                    </div>`;
+                }).join('');
+            }
+
+            // Redraw chart
+            drawPerfChart();
+        }
+
+        // Init
+        updateAnalytics();
+        setInterval(updateAnalytics, 5000);
+    </script>
+</body>
+</html>

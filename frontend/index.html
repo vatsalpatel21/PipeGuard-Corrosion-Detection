@@ -1,15 +1,328 @@
-<!-- Frontend code goes here -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PipeGuard AI Control Center - Real-time smart pipe monitoring system with AI-powered corrosion and leakage detection.">
+    <title>PipeGuard AI Control Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Scanline Overlay -->
+    <div class="scanline-overlay"></div>
 
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <span class="material-icons-outlined">shield</span>
+            </div>
+            <div class="brand-text">
+                <h2>PipeGuard</h2>
+                <span class="brand-tag">AI CONTROL CENTER</span>
+            </div>
+        </div>
 
+        <div class="sidebar-status">
+            <span class="status-dot"></span>
+            <span>System Active</span>
+        </div>
 
+        <ul class="nav-menu">
+            <li class="nav-item active">
+                <a href="index.html">
+                    <span class="material-icons-outlined">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="live-feed.html">
+                    <span class="material-icons-outlined">videocam</span>
+                    <span>Live Feed</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="pipeline-monitor.html">
+                    <span class="material-icons-outlined">route</span>
+                    <span>Pipeline Monitor</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="anomaly-detection.html">
+                    <span class="material-icons-outlined">warning</span>
+                    <span>Anomaly Detection</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="analytics.html">
+                    <span class="material-icons-outlined">analytics</span>
+                    <span>Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html">
+                    <span class="material-icons-outlined">settings</span>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
 
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">AR</div>
+                <div class="user-info">
+                    <span class="user-name">Admin</span>
+                    <span class="user-role">Chief Engineer</span>
+                </div>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button class="menu-toggle" id="menuToggle">
+                    <span class="material-icons-outlined">menu</span>
+                </button>
+                <h1 class="page-title">Dashboard</h1>
+                <span class="page-subtitle">Real-Time Monitoring Overview</span>
+            </div>
+            <div class="top-bar-right">
+                <div class="search-box">
+                    <span class="material-icons-outlined">search</span>
+                    <input type="text" placeholder="Search systems..." id="searchInput">
+                </div>
+                <button class="icon-btn notification-btn" id="notifBtn">
+                    <span class="material-icons-outlined">notifications</span>
+                    <span class="notif-badge">0</span>
+                </button>
+                <div class="live-clock" id="liveClock"></div>
+            </div>
+        </header>
 
+        <!-- Metrics Row -->
+        <section class="metrics-grid" id="metricsSection">
+            <div class="metric-card">
+                <div class="metric-icon green-glow">
+                    <span class="material-icons-outlined">sensors</span>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-label">ACTIVE SENSORS</span>
+                    <span class="metric-value" id="activeSensors">0</span>
+                    <span class="metric-trend positive" id="sensorsTrend">
+                        <span class="material-icons-outlined">trending_up</span>
+                        awaiting data
+                    </span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon cyan-glow">
+                    <span class="material-icons-outlined">speed</span>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-label">AI PRECISION</span>
+                    <span class="metric-value" id="aiPrecision">--</span>
+                    <span class="metric-trend positive" id="precisionTrend">
+                        <span class="material-icons-outlined">trending_up</span>
+                        live
+                    </span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon orange-glow">
+                    <span class="material-icons-outlined">warning_amber</span>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-label">ACTIVE ALERTS</span>
+                    <span class="metric-value" id="activeAlerts">0</span>
+                    <span class="metric-trend negative" id="alertsTrend">
+                        <span class="material-icons-outlined">trending_down</span>
+                        last 5 min
+                    </span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon green-glow">
+                    <span class="material-icons-outlined">verified</span>
+                </div>
+                <div class="metric-info">
+                    <span class="metric-label">SYSTEM HEALTH</span>
+                    <span class="metric-value" id="systemHealth">OPTIMAL</span>
+                    <span class="metric-trend positive" id="healthTrend">
+                        <span class="material-icons-outlined">check_circle</span>
+                        awaiting data
+                    </span>
+                </div>
+            </div>
+        </section>
 
+        <!-- Main Grid -->
+        <section class="dashboard-grid">
+            <!-- Detection History Chart -->
+            <div class="glass-card chart-card">
+                <div class="card-header">
+                    <h3>24h Detection History</h3>
+                    <span class="card-subtitle">Anomaly tracking across active sensors</span>
+                </div>
+                <div class="chart-container" id="detectionChart">
+                    <canvas id="historyCanvas"></canvas>
+                </div>
+            </div>
 
+            <!-- System Status -->
+            <div class="glass-card status-card-main">
+                <div class="card-header">
+                    <h3>System Status</h3>
+                    <span class="status-badge online">
+                        <span class="pulse-dot"></span>
+                        ONLINE
+                    </span>
+                </div>
+                <div class="status-content">
+                    <div class="status-ring-container">
+                        <svg class="status-ring" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="52" class="ring-bg"/>
+                            <circle cx="60" cy="60" r="52" class="ring-fill" id="healthRing"/>
+                        </svg>
+                        <div class="ring-label">
+                            <span class="ring-value">--</span>
+                            <span class="ring-text">Awaiting</span>
+                        </div>
+                    </div>
+                    <div class="condition-breakdown">
+                        <h4>Condition Breakdown</h4>
+                        <div class="condition-item">
+                            <span class="condition-dot normal"></span>
+                            <span>Normal</span>
+                            <span class="condition-value">--</span>
+                        </div>
+                        <div class="condition-item">
+                            <span class="condition-dot corrosion"></span>
+                            <span>Corrosion</span>
+                            <span class="condition-value">--</span>
+                        </div>
+                        <div class="condition-item">
+                            <span class="condition-dot leakage"></span>
+                            <span>Leakage</span>
+                            <span class="condition-value">--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Critical Alerts -->
+            <div class="glass-card alerts-card">
+                <div class="card-header">
+                    <h3>Critical Alerts</h3>
+                    <button class="btn-ghost" id="viewAllAlerts">View All</button>
+                </div>
+                <div class="alerts-list" id="alertsList">
+                    <div class="alert-item critical">
+                        <div class="alert-icon">
+                            <span class="material-icons-outlined">error</span>
+                        </div>
+                        <div class="alert-content">
+                            <h4>Pressure Drop: P-102</h4>
+                            <p>Sector 7G-South. Possible structural fatigue detected.</p>
+                            <span class="alert-time">2 min ago</span>
+                        </div>
+                        <span class="alert-severity critical">CRITICAL</span>
+                    </div>
+                    <div class="alert-item warning">
+                        <div class="alert-icon">
+                            <span class="material-icons-outlined">vibration</span>
+                        </div>
+                        <div class="alert-content">
+                            <h4>Vibration Alert: Pump T-01</h4>
+                            <p>RPM variance exceeds safety threshold by 5.2%.</p>
+                            <span class="alert-time">14 min ago</span>
+                        </div>
+                        <span class="alert-severity warning">WARNING</span>
+                    </div>
+                    <div class="alert-item warning">
+                        <div class="alert-icon">
+                            <span class="material-icons-outlined">build</span>
+                        </div>
+                        <div class="alert-content">
+                            <h4>Corrosion Warning: S-004</h4>
+                            <p>Sonic sensor indicates wall thickness reduction.</p>
+                            <span class="alert-time">38 min ago</span>
+                        </div>
+                        <span class="alert-severity warning">WARNING</span>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Recent Activity -->
+            <div class="glass-card activity-card">
+                <div class="card-header">
+                    <h3>Recent Activity</h3>
+                </div>
+                <div class="activity-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot success"></div>
+                        <div class="timeline-content">
+                            <h4>Routine Scan Complete</h4>
+                            <p>Sector 4A scanned, no cracks found.</p>
+                            <span class="timeline-time">5 min ago</span>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot info"></div>
+                        <div class="timeline-content">
+                            <h4>AI Model Updated</h4>
+                            <p>Enhanced leak detection for PVC pipes.</p>
+                            <span class="timeline-time">22 min ago</span>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot warning"></div>
+                        <div class="timeline-content">
+                            <h4>Maintenance Scheduled</h4>
+                            <p>Technician dispatched to Sector 9.</p>
+                            <span class="timeline-time">1h ago</span>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot success"></div>
+                        <div class="timeline-content">
+                            <h4>Global Sensor Sync</h4>
+                            <p>Handshake protocol updated for 12,850 units.</p>
+                            <span class="timeline-time">2h ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Predictive Insight -->
+            <div class="glass-card insight-card">
+                <div class="card-header">
+                    <h3>
+                        <span class="material-icons-outlined">psychology</span>
+                        Predictive Insight
+                    </h3>
+                </div>
+                <div class="insight-content">
+                    <div class="insight-message">
+                        <p>Optimal window for preventative maintenance at <strong>Segment 4B</strong> is between <strong>02:00-04:00 UTC tomorrow</strong>.</p>
+                        <p class="insight-warning">Postponing maintenance increases catastrophic failure risk by <span class="highlight-red">18.5%</span> within 72 hours.</p>
+                    </div>
+                    <div class="insight-actions">
+                        <button class="btn-primary" id="scheduleBtn">Schedule Maintenance</button>
+                        <button class="btn-ghost" id="dismissBtn">Dismiss</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-
-Created frontend folder and index.html
+    <script src="pipeguard-state.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
